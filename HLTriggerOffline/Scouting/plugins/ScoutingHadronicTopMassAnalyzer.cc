@@ -119,23 +119,7 @@ ScoutingHadronicTopMassAnalyzer::ScoutingHadronicTopMassAnalyzer(const edm::Para
       bTagWP_(iConfig.getParameter<double>("BTagWP")),
       minMuonPt_(iConfig.getParameter<double>("MinMuonPt")) {}
 
-ScoutingHadronicTopMassAnalyzer::~ScoutingHadronicTopMassAnalyzer() {
-  edm::LogPrint("ScoutingHadronicTopMassAnalyzer")
-    << "\n=== CutFlow Summary ==="
-    << "\n  All events:         " << nAll_
-    << "\n  Pass trigger:       " << nTrigger_
-    << "\n  Jets valid:         " << nJetsValid_
-    << "\n  BTag valid:         " << nBTagValid_
-    << "\n  >= 4 jets:          " << nGe4Jets_
-    << "\n  >= 2 b-tags:        " << nGe2BTag_
-    << "\n  Muons valid:        " << nMuonsValid_
-    << "\n  Muon selection:     " << nMuonSel_
-    << "\n  MET cut:            " << nMETCut_
-    << "\n  Hadronic top found: " << nHadTop_
-    << "\n  Leptonic top found: " << nLepTop_
-    << "\n  Both b-tag pass:    " << nBothBTag_
-    << "\n========================";
-}
+ScoutingHadronicTopMassAnalyzer::~ScoutingHadronicTopMassAnalyzer() {}
 
 void ScoutingHadronicTopMassAnalyzer::bookHistograms(DQMStore::IBooker& ibook, 
                                                       edm::Run const&, 
@@ -211,29 +195,20 @@ void ScoutingHadronicTopMassAnalyzer::dqmAnalyze(const edm::Event& iEvent,
   // Get reco jets (produced by scouting→reco conversion chain)
   edm::Handle<reco::PFJetCollection> jets;
   iEvent.getByToken(jetsToken_, jets);
-  if (!jets.isValid()) {
-    edm::LogWarning("ScoutingHadronicTopMassAnalyzer") 
-      << "Jets collection not found in event " << iEvent.id().event();
+  if (!jets.isValid())
     return;
-  }
   ++nJetsValid_;
   
   // Get b-tag scores (ParticleNet probb ValueMap keyed to ak4ScoutingJets)
   edm::Handle<edm::ValueMap<float>> bTagProbB;
   iEvent.getByToken(bTagProbBToken_, bTagProbB);
   bool hasBTag = bTagProbB.isValid();
-  if (!hasBTag) {
-    edm::LogWarning("ScoutingHadronicTopMassAnalyzer") 
-      << "B-tag scores not found in event " << iEvent.id().event();
-  } else {
+  if (hasBTag)
     ++nBTagValid_;
-  }
   
   // Count and fill jet histograms
   int nJets = 0;
   int nBTagJets = 0;
-  edm::LogPrint("ScoutingHadronicTopMassAnalyzer") 
-    << "Event " << iEvent.id().event() << " - B-Tag Scores (hasBTag=" << hasBTag << "):";
   
   for (size_t i = 0; i < jets->size(); ++i) {
     const auto& jet = (*jets)[i];
@@ -250,10 +225,6 @@ void ScoutingHadronicTopMassAnalyzer::dqmAnalyze(const edm::Event& iEvent,
         histos.hBTagScore->Fill(probB);
         if (probB > bTagWP_)
           nBTagJets++;
-        edm::LogPrint("ScoutingHadronicTopMassAnalyzer")
-          << "  Jet " << (nJets-1) << ": pT=" << jet.pt()
-          << " eta=" << jet.eta()
-          << " probb=" << probB;
       }
     }
   }
@@ -274,11 +245,8 @@ void ScoutingHadronicTopMassAnalyzer::dqmAnalyze(const edm::Event& iEvent,
   // Get scouting muons
   edm::Handle<std::vector<Run3ScoutingMuon>> muons;
   iEvent.getByToken(muonsToken_, muons);
-  if (!muons.isValid()) {
-    edm::LogWarning("ScoutingHadronicTopMassAnalyzer") 
-      << "Muons collection not found in event " << iEvent.id().event();
+  if (!muons.isValid())
     return;
-  }
   ++nMuonsValid_;
   
   // Require exactly one muon above 30 GeV and all others below 15 GeV
@@ -382,9 +350,6 @@ void ScoutingHadronicTopMassAnalyzer::dqmAnalyze(const edm::Event& iEvent,
     ++nHadTop_;
     histos.hHadTopMass->Fill(bestTopMass);
     histos.hHadWMass->Fill(bestWMass);
-    edm::LogPrint("ScoutingHadronicTopMassAnalyzer")
-      << "  Best combo: hadB=" << bestHadB << " w1=" << bestW1 << " w2=" << bestW2
-      << " topM=" << bestTopMass << " wM=" << bestWMass << " prob=" << bestProb;
 
     // --- Leptonic top: highest-pT remaining jet + muon + neutrino ---
     // Find highest-pT good jet not used in the hadronic combo
@@ -451,18 +416,12 @@ void ScoutingHadronicTopMassAnalyzer::dqmAnalyze(const edm::Event& iEvent,
         // Fill leptonic top mass before b-tag cut
         histos.hLepTopMass->Fill(lepTopMass);
 
-        edm::LogPrint("ScoutingHadronicTopMassAnalyzer")
-          << "  LepTop: lepB=" << bestLepB << " nu_pz=" << nu_pz
-          << " lepTopM=" << lepTopMass;
-
         // Check if both hadronic and leptonic b-jets pass b-tag > 0.208
         if (hasBTag) {
           edm::Ref<reco::PFJetCollection> hadBRef(jets, goodJetIdx[bestHadB]);
           edm::Ref<reco::PFJetCollection> lepBRef(jets, goodJetIdx[bestLepB]);
           float hadBScore = (*bTagProbB)[hadBRef];
           float lepBScore = (*bTagProbB)[lepBRef];
-          edm::LogPrint("ScoutingHadronicTopMassAnalyzer")
-            << "  HadB b-tag score=" << hadBScore << " LepB b-tag score=" << lepBScore;
           if (hadBScore > 0.208 && lepBScore > 0.208) {
             ++nBothBTag_;
             histos.hHadTopMassBTag->Fill(bestTopMass);
@@ -477,7 +436,7 @@ void ScoutingHadronicTopMassAnalyzer::dqmAnalyze(const edm::Event& iEvent,
 
 void ScoutingHadronicTopMassAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   edm::ParameterSetDescription desc;
-  desc.add<std::string>("OutputPath", "HLT/ScoutingHadronicTop");
+  desc.add<std::string>("OutputPath", "HLT/ScoutingOffline/ScoutingHadronicTop");
   desc.add<edm::InputTag>("JetCollection", edm::InputTag("ak4ScoutingJets"));
   desc.add<edm::InputTag>("BTagProbB", edm::InputTag("ak4ScoutingJetParticleNetJetTags", "probb"));
   desc.add<edm::InputTag>("ScoutingMuons", edm::InputTag("hltScoutingMuonPackerVtx"));
