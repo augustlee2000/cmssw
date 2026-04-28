@@ -4,7 +4,7 @@ Scouting Hadronic Top DQM Configuration
 Self-contained configuration for hadronic top reconstruction from scouting data.
 Includes: PF candidate conversion, jet clustering, ParticleNet b-tagging, and DQM analyzer.
 
-Author: August Lee
+Author: August Lee, University of Notre Dame, alee43@nd.edu
 Date: March 2026
 """
 
@@ -151,3 +151,4 @@ def customizeTriggerSelection(process, triggers):
     """
     process.scoutingHadronicTopAnalyzer.TriggerSelection = cms.vstring(triggers)
     return process
+
