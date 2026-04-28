@@ -452,3 +452,4 @@ void ScoutingHadronicTopMassAnalyzer::fillDescriptions(edm::ConfigurationDescrip
 }
 
 DEFINE_FWK_MODULE(ScoutingHadronicTopMassAnalyzer);
+
