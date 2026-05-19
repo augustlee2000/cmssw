@@ -98,6 +98,7 @@ process.p = cms.Path(process.dqmcommon *
                      process.scoutingCollectionMonitor *
                      process.ScoutingRecHitsMonitoring *
                      process.ScoutingDileptonMonitorOnline *
+					 process.ScoutingHadronicTopMonitorOnline *
                      process.ScoutingMuonPropertiesMonitorOnline *
                      process.ScoutingPi0MonitorOnline)
 
