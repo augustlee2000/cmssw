@@ -1,1 +1,1 @@
-#August - I don't understand the best way to connect the my DQM/
+#August - I don't understand the best way to connect this the proper way
