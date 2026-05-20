@@ -58,6 +58,7 @@ process.load("DQM.HLTEvF.ScoutingJetMonitoring_cff")
 process.load("DQM.HLTEvF.ScoutingElectronMonitoring_cff")
 process.load("DQM.HLTEvF.ScoutingRechitMonitoring_cff")
 process.load("DQM.HLTEvF.ScoutingDileptonMonitor_cfi")
+process.load("DQM.HLTEvF.ScoutingHadronicTopMonitor_cfi")
 process.load("DQM.HLTEvF.ScoutingPi0Monitor_cfi")
 
 ## best electron track producer
@@ -73,6 +74,7 @@ process.p = cms.Path(process.dqmcommon *
                      process.ScoutingElectronMonitoring *
                      process.ScoutingRecHitsMonitoring *
                      process.ScoutingDileptonMonitorOnline *
+					 process.ScoutingHadronicTopMonitor *
                      process.ScoutingPi0MonitorOnline)
 
 ### process customizations included here
