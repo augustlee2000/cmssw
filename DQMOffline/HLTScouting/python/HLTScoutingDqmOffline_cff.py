@@ -31,6 +31,9 @@ from HLTriggerOffline.Scouting.ScoutingRecHitAnalyzers_cff import *
 ### DiLeptons monitoring
 from HLTriggerOffline.Scouting.HLTScoutingDileptonMonitor_cfi import *
 
+### HadronicTop monitoring
+from HLTriggerOffline.Scouting.HLTScoutingHadronicTop_cfi import *
+
 ### Pi0 Monitoring
 from HLTriggerOffline.Scouting.HLTScoutingPi0Monitor_cfi import *
 
@@ -48,6 +51,7 @@ hltScoutingJetDqmOfflineForRelVals = cms.Sequence(jetMETDQMOfflineSourceScouting
 
 hltScoutingCollectionMonitor = cms.Sequence(scoutingCollectionMonitor)
 hltScoutingDileptonMonitor = cms.Sequence(ScoutingDileptonMonitor)
+hltScoutingHadronicTop = cms.Sequence(ScoutingHadronicTop)
 hltScoutingPi0Monitor = cms.Sequence(ScoutingPi0Monitor)
 
 hltScoutingDqmOffline = cms.Sequence(hltScoutingMuonDqmOffline +
@@ -55,6 +59,7 @@ hltScoutingDqmOffline = cms.Sequence(hltScoutingMuonDqmOffline +
                                      hltScoutingJetDqmOffline +
                                      run3ScoutingElectronBestTrack +
                                      hltScoutingDileptonMonitor +
+                                     hltScoutingHadronicTop +
                                      hltScoutingPi0Monitor +
                                      hltScoutingCollectionMonitor)
 
